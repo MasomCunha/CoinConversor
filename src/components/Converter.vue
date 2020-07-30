@@ -1,11 +1,11 @@
 <template>
-  <div class='converter_container'>
+  <div class="converter_container">
     <b-jumbotron header="Coin Converter">
       <Input @clicked="onClickChild" />
-      <br/>
+      <br />
       <b-button variant="primary" @click="convert">Convert</b-button>
-      <hr/>
-      <Anwser :value="converted_value"/>
+      <hr />
+      <Anwser :value="converted_value" />
     </b-jumbotron>
   </div>
 </template>
@@ -17,43 +17,47 @@ import Anwser from "./Answer";
 export default {
   components: {
     Input,
-    Anwser
+    Anwser,
   },
   data() {
     return {
-      input_value: '',
-      converted_value: ''
-    }
+      input_value: "",
+      converted_value: "",
+      from: "",
+      to: " ",
+    };
   },
   methods: {
-    onClickChild (value) {
-      console.log(value)
-      this.input_value = value
-      console.log(this.input_value)
+    onClickChild(value, from, to) {
+      this.input_value = value;
+      this.from = from;
+      this.to = to;
     },
-    convert(){
-      this.converted_value = this.input_value * 10
-    }
+    convert() {
+      fetch("https://api.exchangeratesapi.io/latest?base=" + this.from, {
+        method: "get",
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((jsonData) => {
+          let obj = jsonData.rates;
+          Object.entries(obj).forEach((entry) => {
+            const [key, value] = entry;
+            if (key === this.to){
+            this.converted_value = this.input_value * value;
+            }
+          });
+        });
+    },
   },
-  mounted: function(){
-    fetch('https://api.exchangeratesapi.io/latest', {
-      method:'get'
-    })
-    .then((response) => {
-      return(response.json())
-    })
-    .then((jsonData) => {
-      console.log(jsonData)
-      this.questions = jsonData.results
-    })
-  }
 };
 </script>
 
 <style scoped>
-.converter_container{
-   display: flex;
-   align-content: center;
-   justify-content: center;
+.converter_container {
+  display: flex;
+  align-content: center;
+  justify-content: center;
 }
 </style>

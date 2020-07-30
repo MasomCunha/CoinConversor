@@ -35,11 +35,12 @@ export default {
   },
   methods: {
     select_from(rate) {
-      this.$emit('clicked', this.input_value);
       this.from = rate;
+      this.$emit('clicked', this.input_value, this.from, this.to);
     },
     select_to(rate) {
       this.to = rate;
+      this.$emit('clicked', this.input_value, this.from, this.to);
     },
     btn_name_from(){
       if(this.from === "") {
@@ -49,16 +50,11 @@ export default {
       }
     },
     btn_name_to(){
-      if(this.from === "") {
+      if(this.to === "") {
         return "convert to"
       }else{
-        return this.from
+        return this.to
       }
-    },
-    changeOption(item){
-      console.log(item)
-      this.to = "batata"
-      console.log(this.to)
     }
   },
   mounted: function(){
@@ -69,8 +65,8 @@ export default {
       return(response.json())
     })
     .then((jsonData) => {
-      console.log(jsonData)
       this.all_rates = Object.keys(jsonData.rates)
+      this.all_rates.push("EUR")
       console.log(this.all_rates)
     })
   }
